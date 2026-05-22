@@ -1,12 +1,12 @@
 // Autonomous Bayflix.MS smoke crawl.
-// - Opens https://dev2.cwi-group.org/
+// - Opens https://bayflix.ms/
 // - Captures every console msg and network failure across N routes
 // - Groups by error pattern + originating URL
 // - Prints a structured report
 
 import { chromium } from 'playwright';
 
-const BASE = process.env.BAYFLIX_BASE || 'https://dev2.cwi-group.org';
+const BASE = process.env.BAYFLIX_BASE || 'https://bayflix.ms';
 const ROUTES = [
     '/',
     '/library',

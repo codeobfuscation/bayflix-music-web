@@ -41,8 +41,7 @@ export const auth = betterAuth({
         // Cookies need the right domain so the SPA on bayflix.ms can see a
         // session set by auth.bayflix.ms. better-auth uses the configured
         // baseURL to derive the right cookie domain automatically when
-        // crossSubDomainCookies.domain is omitted; we leave it dynamic so the
-        // same server can serve both bayflix.ms and dev2.cwi-group.org.
+        // crossSubDomainCookies.domain is omitted, so we leave it dynamic.
         crossSubDomainCookies: {
             enabled: true,
         },

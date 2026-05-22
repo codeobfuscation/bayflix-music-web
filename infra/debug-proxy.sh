@@ -7,15 +7,15 @@ echo "=== 2. Hit nginx via 127.0.0.1 with proper AOP client cert ==="
 # Need to pass AOP cert + key. The cwi-aop.conf requires a client cert.
 # Cloudflare's edge has the cert; we need to simulate by skipping AOP for this test.
 # Just test the location matching with insecure skip:
-curl -skI --max-time 10 --resolve dev2.cwi-group.org:443:127.0.0.1 \
-    https://dev2.cwi-group.org/proxy/artistgrid/drake.webp 2>&1 | head -5
+curl -skI --max-time 10 --resolve bayflix.ms:443:127.0.0.1 \
+    https://bayflix.ms/proxy/artistgrid/drake.webp 2>&1 | head -5
 echo
 
 echo "=== 3. Tail nginx error log while we probe via CF ==="
-tail -n 0 -F /var/log/nginx/dev2.cwi-group.org.error.log /var/log/nginx/dev2.cwi-group.org.access.log &
+tail -n 0 -F /var/log/nginx/bayflix.ms.error.log /var/log/nginx/bayflix.ms.access.log &
 TAIL_PID=$!
 sleep 1
-curl -sI --max-time 10 https://dev2.cwi-group.org/proxy/artistgrid/drake.webp 2>&1 | head -3
+curl -sI --max-time 10 https://bayflix.ms/proxy/artistgrid/drake.webp 2>&1 | head -3
 sleep 2
 kill $TAIL_PID 2>/dev/null
 echo
@@ -29,4 +29,4 @@ head -3 /etc/nginx/cloudflare.conf
 echo
 
 echo "=== 6. recent access log entries for proxy paths ==="
-grep '/proxy/' /var/log/nginx/dev2.cwi-group.org.access.log | tail -3 || echo "(no entries — request never reached nginx)"
+grep '/proxy/' /var/log/nginx/bayflix.ms.access.log | tail -3 || echo "(no entries — request never reached nginx)"
