@@ -1939,7 +1939,15 @@ export class LosslessAPI {
         }
 
         const id = input?.id || input;
-        const track = typeof input === 'object' && input.isrc ? input : await this.getTrackMetadata(id);
+        // Tracker (unreleased) tracks already have full metadata baked in by
+        // createTrackFromSong + their own direct audioUrl from ArtistGrid r2 —
+        // they have no ISRC and the TIDAL `/info?id=tracker-…` lookup just
+        // cascades into 12+ failed instance fetches. Pass them straight through.
+        const isTrackerInput = !!(input && typeof input === 'object' && (input.isTracker || (typeof input.id === 'string' && input.id.startsWith('tracker-'))));
+        const track =
+            typeof input === 'object' && (input.isrc || isTrackerInput)
+                ? input
+                : await this.getTrackMetadata(id);
         const isVideo = track?.type?.toLowerCase().includes('video');
         const cleanQuality = isCustomFormat(downloadQuality) ? 'LOSSLESS' : downloadQuality;
 
@@ -1951,6 +1959,25 @@ export class LosslessAPI {
             lookup = await this.getVideo(id);
         } else if (devModeSettings.isEnabled()) {
             lookup = new PlaybackInfo(await this.getTrackFromDevMode(id, cleanQuality));
+        } else if (isTrackerInput) {
+            // Tracker track: stream URL is the artistgrid direct URL (now also
+            // proxied through /proxy/artistgrid-r2/ by transformImageUrl).
+            const directUrl = track.audioUrl || track.remoteUrl;
+            if (!directUrl) {
+                notifyAudioSourceMissing();
+                throw new Error('Tracker track has no audio URL');
+            }
+            qobuzStreamUrl = directUrl;
+            lookup = {
+                info: {
+                    audioQuality: cleanQuality,
+                    trackReplayGain: 0,
+                    trackPeakAmplitude: 1,
+                    albumReplayGain: 0,
+                    albumPeakAmplitude: 1,
+                    originalTrackUrl: directUrl,
+                },
+            };
         } else {
             if (!track?.isrc) {
                 notifyAudioSourceMissing();
@@ -2290,7 +2317,15 @@ export class LosslessAPI {
             return `https://picsum.photos/seed/${Math.random()}/${size}`;
         }
 
-        if (typeof id === 'string' && (id.startsWith('http') || id.startsWith('blob:') || id.startsWith('assets/'))) {
+        if (
+            typeof id === 'string' &&
+            (id.startsWith('http') ||
+                id.startsWith('blob:') ||
+                id.startsWith('data:') ||
+                id.startsWith('/') ||
+                id.startsWith('./') ||
+                id.startsWith('assets/'))
+        ) {
             return id;
         }
 
@@ -2301,7 +2336,13 @@ export class LosslessAPI {
     getCoverSrcset(id) {
         if (
             !id ||
-            (typeof id === 'string' && (id.startsWith('http') || id.startsWith('blob:') || id.startsWith('assets/')))
+            (typeof id === 'string' &&
+                (id.startsWith('http') ||
+                    id.startsWith('blob:') ||
+                    id.startsWith('data:') ||
+                    id.startsWith('/') ||
+                    id.startsWith('./') ||
+                    id.startsWith('assets/')))
         ) {
             return '';
         }
@@ -2316,7 +2357,15 @@ export class LosslessAPI {
             return `https://picsum.photos/seed/${Math.random()}/${size}`;
         }
 
-        if (typeof id === 'string' && (id.startsWith('blob:') || id.startsWith('assets/'))) {
+        if (
+            typeof id === 'string' &&
+            (id.startsWith('http') ||
+                id.startsWith('blob:') ||
+                id.startsWith('data:') ||
+                id.startsWith('/') ||
+                id.startsWith('./') ||
+                id.startsWith('assets/'))
+        ) {
             return id;
         }
 
@@ -2325,7 +2374,16 @@ export class LosslessAPI {
     }
 
     getArtistPictureSrcset(id) {
-        if (!id || (typeof id === 'string' && (id.startsWith('blob:') || id.startsWith('assets/')))) {
+        if (
+            !id ||
+            (typeof id === 'string' &&
+                (id.startsWith('http') ||
+                    id.startsWith('blob:') ||
+                    id.startsWith('data:') ||
+                    id.startsWith('/') ||
+                    id.startsWith('./') ||
+                    id.startsWith('assets/')))
+        ) {
             return '';
         }
 

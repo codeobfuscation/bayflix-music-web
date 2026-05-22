@@ -1,52 +1,22 @@
 {
-    "name": "Monochrome Music",
-    "short_name": "Monochrome",
-    "description": "A minimalist music streaming application",
+    "name": "Bayflix Music",
+    "short_name": "Bayflix.MS",
+    "description": "Bayflix Music — stream Hi-Res lossless audio in a clean, focused interface.",
     "start_url": "./",
     "display": "standalone",
     "display_override": ["window-controls-overlay"],
-    "background_color": "#000000",
-    "theme_color": "#000000",
+    "background_color": "#080505",
+    "theme_color": "#080505",
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "assets/icons/icon-48.webp",
-            "type": "image/png",
-            "sizes": "48x48",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "assets/icons/icon-72.webp",
-            "type": "image/png",
-            "sizes": "72x72",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "assets/icons/icon-96.webp",
-            "type": "image/png",
-            "sizes": "96x96",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "assets/icons/icon-128.webp",
-            "type": "image/png",
-            "sizes": "128x128",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "assets/icons/icon-192.webp",
+            "src": "/web-app-manifest-192x192.png",
             "type": "image/png",
             "sizes": "192x192",
             "purpose": "any maskable"
         },
         {
-            "src": "assets/icons/icon-256.webp",
-            "type": "image/png",
-            "sizes": "256x256",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "assets/icons/icon-512.webp",
+            "src": "/web-app-manifest-512x512.png",
             "type": "image/png",
             "sizes": "512x512",
             "purpose": "any maskable"
@@ -61,7 +31,7 @@
             "url": "./#search",
             "icons": [
                 {
-                    "src": "assets/96.png",
+                    "src": "/favicon-96x96.png",
                     "sizes": "96x96",
                     "type": "image/png"
                 }

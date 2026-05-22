@@ -1,14 +1,14 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'tf.monochrome.music',
-    appName: 'Monochrome Music',
+    appId: 'ms.bayflix.music',
+    appName: 'Bayflix Music',
     webDir: 'dist',
     assets: {
-        iconBackgroundColor: '#000000',
-        iconBackgroundColorDark: '#000000',
-        splashBackgroundColor: '#000000',
-        splashBackgroundColorDark: '#000000',
+        iconBackgroundColor: '#080505',
+        iconBackgroundColorDark: '#080505',
+        splashBackgroundColor: '#080505',
+        splashBackgroundColorDark: '#080505',
     },
 };
 

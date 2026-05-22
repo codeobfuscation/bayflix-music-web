@@ -4,52 +4,57 @@
         <meta charset="UTF-8" />
         <meta name="referrer" content="no-referrer" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        <title>Monochrome</title>
-        <link rel="canonical" href="https://monochrome.tf/" />
-        <link rel="alternate" hreflang="en" href="https://monochrome.tf/" />
-        <meta name="theme-color" content="#000000" />
+        <title>Bayflix Music</title>
+        <link rel="canonical" href="https://bayflix.ms/" />
+        <link rel="alternate" hreflang="en" href="https://bayflix.ms/" />
+        <meta name="theme-color" content="#080505" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <base href="/" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Monochrome" />
+        <meta name="apple-mobile-web-app-title" content="Bayflix.MS" />
         <meta
             name="description"
-            content="Stream and download millions of Hi-Res FLACs, unreleased songs and music videos, all for free on Monochrome."
+            content="Bayflix Music — stream Hi-Res lossless audio in a clean, focused interface."
         />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:site_name" content="Monochrome" />
-        <meta property="og:title" content="Monochrome" />
+        <meta property="og:site_name" content="Bayflix Music" />
+        <meta property="og:title" content="Bayflix Music" />
         <meta
             property="og:description"
-            content="Stream and download millions of Hi-Res FLACs, unreleased songs and music videos, all for free on Monochrome."
+            content="Bayflix Music — stream Hi-Res lossless audio in a clean, focused interface."
         />
-        <meta property="og:url" content="https://monochrome.tf/" />
-        <meta property="og:image" content="https://monochrome.tf/assets/banner.jpg" />
-        <meta property="og:image:type" content="image/jpeg" />
-        <meta property="og:image:alt" content="Monochrome banner" />
+        <meta property="og:url" content="https://bayflix.ms/" />
+        <meta property="og:image" content="https://bayflix.ms/assets/bayflix.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="Bayflix Music" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content="https://monochrome.tf/" />
-        <meta name="twitter:title" content="Monochrome" />
+        <meta name="twitter:url" content="https://bayflix.ms/" />
+        <meta name="twitter:title" content="Bayflix Music" />
         <meta
             name="twitter:description"
-            content="Stream and download millions of Hi-Res FLACs, unreleased songs and music videos, all for free on Monochrome."
+            content="Bayflix Music — stream Hi-Res lossless audio in a clean, focused interface."
         />
-        <meta name="twitter:image" content="https://monochrome.tf/assets/banner-twitter.jpg" />
-        <meta name="twitter:image:alt" content="Monochrome banner" />
+        <meta name="twitter:image" content="https://bayflix.ms/assets/bayflix.png" />
+        <meta name="twitter:image:alt" content="Bayflix Music" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
         <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "Monochrome",
-                "url": "https://monochrome.tf/",
-                "description": "Stream and download millions of Hi-Res FLACs, unreleased songs and music videos, all for free on Monochrome.",
+                "name": "Bayflix Music",
+                "url": "https://bayflix.ms/",
+                "description": "Bayflix Music — stream Hi-Res lossless audio in a clean, focused interface.",
                 "potentialAction": {
                     "@type": "SearchAction",
-                    "target": "https://monochrome.tf/search/{search_term_string}",
+                    "target": "https://bayflix.ms/search/{search_term_string}",
                     "query-input": "required name=search_term_string"
                 }
             }
@@ -58,12 +63,12 @@
             {
                 "@context": "https://schema.org",
                 "@type": "WebApplication",
-                "name": "Monochrome",
-                "url": "https://monochrome.tf/",
+                "name": "Bayflix Music",
+                "url": "https://bayflix.ms/",
                 "applicationCategory": "MusicApplication",
                 "operatingSystem": "Web Browser",
-                "image": "https://monochrome.tf/assets/logo.svg",
-                "description": "Stream and download millions of Hi-Res FLACs, unreleased songs and music videos, all for free on Monochrome."
+                "image": "https://bayflix.ms/assets/bayflix.png",
+                "description": "Bayflix Music — stream Hi-Res lossless audio in a clean, focused interface."
             }
         </script>
         <!-- bini's seo thing -->
@@ -78,9 +83,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-        <link rel="apple-touch-icon" href="/assets/logo.svg" />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/assets/logo.svg" type="image/svg+xml" />
         <link
             rel="preload"
             as="style"
@@ -111,6 +113,123 @@
             />
         </noscript>
         <script>
+            // Bayflix Music: rewrite stale upstream artistgrid URLs in localStorage
+            // (from before the nginx CORP-bypass proxy was added) AND intercept
+            // any new <img>/<source> src set at runtime — defensive belt-and-braces.
+            (() => {
+                const rewrite = (s) => {
+                    if (typeof s !== 'string' || s.length < 8) return s;
+                    if (!s.includes('artistgrid.cx') && !s.includes('s3.sad.ovh')) return s;
+                    return s
+                        .replace(/https:\/\/assets\.artistgrid\.cx\//g, '/proxy/artistgrid/')
+                        .replace(/https:\/\/r2\.artistgrid\.cx\//g, '/proxy/artistgrid-r2/')
+                        .replace(/https:\/\/s3\.sad\.ovh\/trackerapi\//g, '/proxy/artistgrid-r2/')
+                        .replace(/https:\/\/trackerapi-1\.artistgrid\.cx\//g, '/proxy/trackerapi-1/')
+                        .replace(/https:\/\/trackerapi-2\.artistgrid\.cx\//g, '/proxy/trackerapi-2/')
+                        .replace(/https:\/\/trackerapi-3\.artistgrid\.cx\//g, '/proxy/trackerapi-3/');
+                };
+                window.__artistgridRewrite = rewrite;
+                // 1. one-time localStorage migration (idempotent)
+                try {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const k = localStorage.key(i);
+                        const v = localStorage.getItem(k);
+                        const rewritten = rewrite(v);
+                        if (rewritten !== v) localStorage.setItem(k, rewritten);
+                    }
+                } catch (e) { /* private mode / quota — ignore */ }
+                // 2. runtime interception: rewrite <img>/<source>/<video>/<audio> src
+                //    set via property OR setAttribute, plus img.src new Image().src
+                try {
+                    const protos = [HTMLImageElement.prototype, HTMLSourceElement.prototype, HTMLMediaElement.prototype];
+                    for (const proto of protos) {
+                        const desc = Object.getOwnPropertyDescriptor(proto, 'src');
+                        if (desc && desc.set) {
+                            Object.defineProperty(proto, 'src', {
+                                configurable: true,
+                                enumerable: true,
+                                get() { return desc.get.call(this); },
+                                set(value) { desc.set.call(this, rewrite(value)); },
+                            });
+                        }
+                    }
+                    const origSetAttr = Element.prototype.setAttribute;
+                    Element.prototype.setAttribute = function (name, value) {
+                        if (typeof value === 'string' && (name === 'src' || name === 'href' || name === 'srcset')) {
+                            value = rewrite(value);
+                        }
+                        return origSetAttr.call(this, name, value);
+                    };
+                } catch (e) { /* old browsers — ignore */ }
+
+                // 3. innerHTML / outerHTML / insertAdjacentHTML — these set strings
+                //    that the browser parses into elements BEFORE any property
+                //    interceptor can run. Rewrite the string itself.
+                try {
+                    const wrapStringSetter = (proto, prop) => {
+                        const d = Object.getOwnPropertyDescriptor(proto, prop);
+                        if (!d || !d.set) return;
+                        Object.defineProperty(proto, prop, {
+                            configurable: true,
+                            enumerable: true,
+                            get() { return d.get.call(this); },
+                            set(value) { d.set.call(this, rewrite(value)); },
+                        });
+                    };
+                    wrapStringSetter(Element.prototype, 'innerHTML');
+                    wrapStringSetter(Element.prototype, 'outerHTML');
+                    const origInsert = Element.prototype.insertAdjacentHTML;
+                    Element.prototype.insertAdjacentHTML = function (position, text) {
+                        return origInsert.call(this, position, rewrite(text));
+                    };
+                } catch (e) { /* ignore */ }
+
+                // 4. one-shot sweep of imgs already in DOM at parse time
+                //    (e.g. the static now-playing-bar cover). Runs on DOMContentLoaded.
+                //    Also fixes the a11y warning: many <label> elements wrap an
+                //    <input> implicitly without `for=`. Add the missing `for=`.
+                const sweepDOM = () => {
+                    try {
+                        document.querySelectorAll('img, source, audio, video').forEach((el) => {
+                            const v = el.getAttribute('src');
+                            const w = rewrite(v);
+                            if (w !== v) el.setAttribute('src', w);
+                        });
+                        document.querySelectorAll('label:not([for])').forEach((label) => {
+                            const field = label.querySelector('input[id], select[id], textarea[id]');
+                            if (field) label.setAttribute('for', field.id);
+                        });
+                    } catch (e) { /* ignore */ }
+                };
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', sweepDOM, { once: true });
+                } else {
+                    sweepDOM();
+                }
+
+                // 5. MutationObserver as a final safety net for any code path that
+                //    creates elements via document.createElement+appendChild without
+                //    going through innerHTML or our setter hooks (e.g. cloneNode).
+                try {
+                    new MutationObserver((muts) => {
+                        for (const m of muts) {
+                            m.addedNodes.forEach((node) => {
+                                if (node.nodeType !== 1) return;
+                                const targets = [node];
+                                if (node.querySelectorAll) {
+                                    node.querySelectorAll('img, source, audio, video').forEach((el) => targets.push(el));
+                                }
+                                for (const el of targets) {
+                                    if (!el.getAttribute) continue;
+                                    const v = el.getAttribute('src');
+                                    const w = rewrite(v);
+                                    if (w !== v) el.setAttribute('src', w);
+                                }
+                            });
+                        }
+                    }).observe(document.documentElement, { childList: true, subtree: true });
+                } catch (e) { /* ignore */ }
+            })();
             (() => {
                 try {
                     const theme = localStorage.getItem('monochrome-theme');
@@ -1161,7 +1280,7 @@
                 <div class="missing-tracks-content">
                     <p>
                         Unfortunately, some songs weren't able to be added. This could be an issue with our import
-                        system - try searching for the song and adding it. It could also be due to Monochrome not having
+                        system - try searching for the song and adding it. It could also be due to Bayflix Music not having
                         the song :(
                     </p>
                     <div class="missing-tracks-list">
@@ -1267,7 +1386,7 @@
                     <br />
                     A Guide To Set This Up Can Be Found
                     <a
-                        href="https://github.com/monochrome-music/monochrome/blob/main/DOCKER.md"
+                        href="https://github.com/codeobfuscation/blob/main/DOCKER.md"
                         style="text-decoration: underline"
                         >Here</a
                     >.
@@ -1291,7 +1410,7 @@
                         type="text"
                         id="custom-appwrite-project"
                         class="template-input"
-                        placeholder="auth-for-monochrome"
+                        placeholder="auth-for-bayflix"
                     />
                 </div>
                 <div class="modal-actions">
@@ -1468,7 +1587,7 @@
                                 placeholder="https://example.com"
                             />
                             <p style="font-size: 0.8rem; color: var(--muted-foreground); margin-top: 0.25rem">
-                                It is recommended to create a Monochrome profile instead.
+                                It is recommended to create a Bayflix profile instead.
                             </p>
                         </div>
                         <div style="margin-bottom: 1rem">
@@ -1476,7 +1595,7 @@
                             <p style="font-size: 0.8rem; color: var(--muted-foreground); margin-bottom: 0.5rem">
                                 Define your CSS variables or custom styles here.
                                 <a
-                                    href="https://github.com/monochrome-music/monochrome/blob/main/THEME_GUIDE.md"
+                                    href="https://github.com/codeobfuscation/blob/main/THEME_GUIDE.md"
                                     target="_blank"
                                     style="text-decoration: underline; color: var(--primary)"
                                     >Read the Theme Guide</a
@@ -1631,7 +1750,7 @@
             <div class="modal-overlay"></div>
             <div class="modal-content">
                 <h3>Update Available</h3>
-                <p>A new version of Monochrome is available.</p>
+                <p>A new version of Bayflix Music is available.</p>
                 <div
                     id="desktop-update-notes"
                     style="
@@ -1720,9 +1839,14 @@
             <aside class="sidebar">
                 <div class="sidebar-content">
                     <div class="sidebar-logo">
-                        <a href="https://monochrome.tf/" class="sidebar-logo-link">
-                            <use svg="./images/monochrome-logo.svg" size="200" class="app-logo" />
-                            <span>Monochrome</span>
+                        <a href="/" class="sidebar-logo-link" aria-label="Bayflix Music">
+                            <img
+                                src="/assets/bayflix.png"
+                                onerror="this.onerror=null;this.src='/assets/bayflix.png'"
+                                alt="Bayflix"
+                                class="app-logo"
+                                style="height: 32px; width: auto; max-width: 100%; display: block"
+                            />
                         </a>
                         <button
                             id="sidebar-toggle"
@@ -1804,7 +1928,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item" id="sidebar-nav-githubbtn" style="display: none">
-                                        <a href="https://github.com/monochrome-music/monochrome" target="_blank">
+                                        <a href="https://github.com/codeobfuscation" target="_blank">
                                             <use svg="./images/github.svg" size="24" />
                                             <span>GitHub</span>
                                         </a>
@@ -1887,7 +2011,7 @@
 
                     <div id="home-view-for-you" class="home-view active">
                         <div id="home-welcome" style="display: none; text-align: center; padding: 4rem 2rem">
-                            <h2 style="margin-bottom: 1rem">Welcome to Monochrome</h2>
+                            <h2 style="margin-bottom: 1rem">Welcome to Bayflix Music</h2>
                             <p style="color: var(--muted-foreground)">
                                 You haven't listened to anything yet. Search for your favorite songs to get started!
                             </p>
@@ -2846,7 +2970,7 @@
                     <div class="profile-header-container">
                         <div class="profile-banner" id="profile-banner"></div>
                         <div class="profile-info-section">
-                            <img id="profile-avatar" src="/assets/appicon.png" class="profile-avatar" alt="Avatar" />
+                            <img id="profile-avatar" src="/assets/appicon.png?v=bayganyo" onerror="this.onerror=null;this.src='/assets/appicon.png?v=bayganyo'" class="profile-avatar" alt="Avatar" />
                             <div class="profile-details">
                                 <h1 id="profile-display-name">User</h1>
                                 <div id="profile-username" class="profile-username">@username</div>
@@ -3164,7 +3288,7 @@
                                         >
                                     </div>
                                     <label class="toggle-switch">
-                                        <input type="checkbox" id="dynamic-color-toggle" checked />
+                                        <input type="checkbox" id="dynamic-color-toggle" />
                                         <span class="slider"></span>
                                     </label>
                                 </div>
@@ -5522,7 +5646,7 @@
                                         type="text"
                                         id="zip-folder-template"
                                         class="template-input"
-                                        placeholder="{albumTitle} - {albumArtist} - monochrome.tf"
+                                        placeholder="{albumTitle} - {albumArtist} - bayflix.ms"
                                     />
                                 </div>
                             </div>
@@ -5882,96 +6006,25 @@
                 </div>
 
                 <div id="page-about" class="page">
-                    <h2 class="section-title" style="text-align: center">About Monochrome</h2>
+                    <h2 class="section-title" style="text-align: center">About Bayflix Music</h2>
                     <div class="about-content">
                         <p class="about-description">
-                            Monochrome is a lightweight, privacy-focused music streaming client designed for
+                            Bayflix Music is a lightweight, privacy-focused music streaming client designed for
                             high-fidelity audio playback. Built with modern web technologies, it provides a clean,
                             distraction-free listening experience.
                             <br />
+                            <br />
+                            Bayflix Music is built on top of the open-source Monochrome project, licensed under
+                            Apache-2.0.
                         </p>
-                        <div class="about-donate">
-                            <h2 class="section-title" style="text-align: center">Support Monochrome</h2>
-                            <p style="text-align: center" class="donate-description">
-                                If Monochrome has been useful to you and you're able to, consider making a donation.
-                                <br />
-                                It helps pay for the server and domain, and you get to support us :)
-                            </p>
-                            <p style="text-align: center; color: var(--muted-foreground); margin-top: 1rem">
-                                If you cannot financially support us, please consider starring the project on GitHub and
-                                sharing with friends!
-                            </p>
-                            <div
-                                class="donate-button"
-                                id="donate-button-container"
-                                style="
-                                    display: flex;
-                                    gap: 20px;
-                                    align-items: center;
-                                    justify-content: center;
-                                    margin-top: 30px;
-                                    flex-wrap: wrap;
-                                "
-                            >
-                                <a
-                                    href="/donate"
-                                    class="btn-secondary"
-                                    style="
-                                        text-decoration: none;
-                                        display: inline-flex;
-                                        align-items: center;
-                                        gap: 0.5rem;
-                                    "
-                                >
-                                    Donate to Monochrome
-                                </a>
-                                <a
-                                    href="https://github.com/monochrome-music/monochrome"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="btn-secondary"
-                                    style="
-                                        text-decoration: none;
-                                        display: inline-flex;
-                                        align-items: center;
-                                        gap: 0.5rem;
-                                    "
-                                >
-                                    Star on GitHub
-                                </a>
-                            </div>
+                        <div class="about-donate" hidden aria-hidden="true">
+                            <p hidden>placeholder</p>
+                            <p hidden>placeholder</p>
+                            <div class="donate-button" id="donate-button-container" hidden aria-hidden="true"></div>
                         </div>
-                        <p style="text-align: center; color: grey">
-                            made with ‪‪❤︎‬ by
-                            <a href="https://prigoana.com/" style="text-decoration: underline">Edideaur</a> &
-                            <a href="https://samidy.com" style="text-decoration: underline">Samidy</a>.
-                        </p>
-                        <p style="text-align: center; color: grey">
-                            We also take paid code commissions (we don't work for free)! Contact any of us for details.
-                        </p>
-                        <br />
-                        <h3 style="text-align: center">Contributors List:</h3>
-                        <br />
-                        <div class="about-contributors"></div>
-                        <div class="about-contributors-failed"></div>
-                        <div class="about-footer">
-                            <p class="version">Version 2.5.0</p>
-                            <p class="version" id="about-commit-info"></p>
-                            <p class="disclaimer">
-                                This is an independent client and is not affiliated with or endorsed by TIDAL or any
-                                music streaming service.
-                            </p>
-                            <p class="disclaimer">
-                                This application does not host, store, or distribute any media files. <br />
-                                All content displayed or accessed through this app is provided by third‑party services
-                                and APIs that are publicly available on the internet. <br />
-                                We do not control, operate, or maintain any external content sources and are not
-                                responsible for the accuracy, availability, or legality of any content provided by third
-                                parties. <br />
-                                Users are solely responsible for how they use this application and for ensuring that
-                                their use complies with applicable laws and regulations in their jurisdiction.
-                            </p>
-                        </div>
+                        <div class="about-contributors" hidden aria-hidden="true"></div>
+                        <div class="about-contributors-failed" hidden aria-hidden="true"></div>
+                        <p class="version" id="about-commit-info" hidden aria-hidden="true"></p>
                     </div>
                 </div>
                 <div id="page-account" class="page">
@@ -6031,44 +6084,115 @@
                     </div>
                 </div>
                 <div id="page-donate" class="page">
-                    <div style="text-align: center; padding: 2rem; max-width: 500px; margin: 0 auto">
-                        <h2 class="section-title" style="margin-bottom: 1.5rem">Support Monochrome</h2>
-                        <p style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--muted-foreground)">
-                            If Monochrome has been useful to you and you're able to, consider making a donation. It
-                            helps pay for the server and domain, and you get to support us :)
+                    <div style="text-align: center; padding: 2rem; max-width: 640px; margin: 0 auto">
+                        <h2 class="section-title" style="margin-bottom: 1rem">Support Bayflix Music</h2>
+                        <p style="margin-bottom: 2rem; line-height: 1.6; color: var(--muted-foreground)">
+                            Bayflix Music is free, ad-free, and runs on a self-hosted stack. If it's useful to you,
+                            consider a crypto donation — it helps cover the server, the domain, and the time spent
+                            keeping things running. Click an address to copy it.
                         </p>
-                        <a
-                            href="https://ko-fi.com/monochrometf"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="btn-primary"
-                            style="
-                                text-decoration: none;
-                                display: inline-flex;
-                                align-items: center;
-                                gap: 0.5rem;
-                                margin-bottom: 2rem;
-                            "
-                        >
-                            Donate on Ko-fi
-                        </a>
-                        <div style="padding-top: 1.5rem; border-top: 1px solid var(--border)">
+
+                        <div class="donate-wallets" style="display: flex; flex-direction: column; gap: 0.75rem; text-align: left">
+                            <button
+                                type="button"
+                                class="donate-wallet"
+                                data-symbol="BTC"
+                                data-address="bc1qr69p0r0cejap5d797nv48lpg9yv3gdphnh6mjn"
+                                style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 8px); padding: 0.875rem 1rem; color: var(--card-foreground); cursor: pointer; font: inherit; text-align: left; display: flex; flex-direction: column; gap: 0.25rem"
+                            >
+                                <span style="font-size: 0.85rem; color: var(--muted-foreground); letter-spacing: 0.04em; text-transform: uppercase">Bitcoin · BTC</span>
+                                <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; word-break: break-all">bc1qr69p0r0cejap5d797nv48lpg9yv3gdphnh6mjn</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="donate-wallet"
+                                data-symbol="ETH"
+                                data-address="0x71A035f5203DEEAc59aE2369c8B6D2C2Ce9F4E09"
+                                style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 8px); padding: 0.875rem 1rem; color: var(--card-foreground); cursor: pointer; font: inherit; text-align: left; display: flex; flex-direction: column; gap: 0.25rem"
+                            >
+                                <span style="font-size: 0.85rem; color: var(--muted-foreground); letter-spacing: 0.04em; text-transform: uppercase">Ethereum · ETH</span>
+                                <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; word-break: break-all">0x71A035f5203DEEAc59aE2369c8B6D2C2Ce9F4E09</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="donate-wallet"
+                                data-symbol="XMR"
+                                data-address="43gbUHMGovDYGAiybkd4JxVKr8yaVe8oQUjf9A419w4Feb9TQZAPdhj16b7Jto5jeo2qF18sxQcF9CMdy97WyyGzFUcyVUb"
+                                style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 8px); padding: 0.875rem 1rem; color: var(--card-foreground); cursor: pointer; font: inherit; text-align: left; display: flex; flex-direction: column; gap: 0.25rem"
+                            >
+                                <span style="font-size: 0.85rem; color: var(--muted-foreground); letter-spacing: 0.04em; text-transform: uppercase">Monero · XMR</span>
+                                <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; word-break: break-all">43gbUHMGovDYGAiybkd4JxVKr8yaVe8oQUjf9A419w4Feb9TQZAPdhj16b7Jto5jeo2qF18sxQcF9CMdy97WyyGzFUcyVUb</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="donate-wallet"
+                                data-symbol="LTC"
+                                data-address="LP9poUMfmmVyyDLkeN48FQ4v6Jrf3DwzN9"
+                                style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 8px); padding: 0.875rem 1rem; color: var(--card-foreground); cursor: pointer; font: inherit; text-align: left; display: flex; flex-direction: column; gap: 0.25rem"
+                            >
+                                <span style="font-size: 0.85rem; color: var(--muted-foreground); letter-spacing: 0.04em; text-transform: uppercase">Litecoin · LTC</span>
+                                <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; word-break: break-all">LP9poUMfmmVyyDLkeN48FQ4v6Jrf3DwzN9</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="donate-wallet"
+                                data-symbol="USDT-USDC"
+                                data-address="0x71A035f5203DEEAc59aE2369c8B6D2C2Ce9F4E09"
+                                style="background: var(--card); border: 1px solid var(--border); border-radius: var(--radius, 8px); padding: 0.875rem 1rem; color: var(--card-foreground); cursor: pointer; font: inherit; text-align: left; display: flex; flex-direction: column; gap: 0.25rem"
+                            >
+                                <span style="font-size: 0.85rem; color: var(--muted-foreground); letter-spacing: 0.04em; text-transform: uppercase">USDT / USDC · ERC-20</span>
+                                <span style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9rem; word-break: break-all">0x71A035f5203DEEAc59aE2369c8B6D2C2Ce9F4E09</span>
+                            </button>
+                        </div>
+
+                        <p id="donate-copy-toast" role="status" aria-live="polite" style="margin-top: 1rem; min-height: 1.25rem; font-size: 0.85rem; color: var(--muted-foreground)"></p>
+
+                        <div style="padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid var(--border)">
                             <p style="font-size: 0.9rem; color: var(--muted-foreground); margin-bottom: 1rem">
-                                If you cannot financially support us, please consider starring the project on GitHub and
-                                sharing with friends!
+                                Bayflix Music is built on top of the open-source Monochrome project (Apache-2.0).
+                                Consider starring the project's GitHub.
                             </p>
                             <a
-                                href="https://github.com/monochrome-music/monochrome"
+                                href="https://github.com/codeobfuscation"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 class="btn-secondary"
                                 style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem"
                             >
-                                Star on GitHub
+                                GitHub
                             </a>
                         </div>
                     </div>
                 </div>
+                <script>
+                    (function () {
+                        document.addEventListener('click', function (e) {
+                            var btn = e.target.closest && e.target.closest('.donate-wallet');
+                            if (!btn) return;
+                            var address = btn.getAttribute('data-address');
+                            var symbol = btn.getAttribute('data-symbol') || 'address';
+                            var toast = document.getElementById('donate-copy-toast');
+                            function show(msg) {
+                                if (!toast) return;
+                                toast.textContent = msg;
+                                clearTimeout(toast._t);
+                                toast._t = setTimeout(function () { toast.textContent = ''; }, 2500);
+                            }
+                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                navigator.clipboard
+                                    .writeText(address)
+                                    .then(function () { show('Copied ' + symbol + ' address'); })
+                                    .catch(function () { show('Could not copy — long-press to select instead'); });
+                            } else {
+                                show('Clipboard unavailable — long-press to select instead');
+                            }
+                        });
+                    })();
+                </script>
                 <div id="page-reset-password" class="page">
                     <div
                         class="reset-password-container"
@@ -6178,7 +6302,7 @@
 
             <footer class="now-playing-bar">
                 <div class="track-info">
-                    <img src="/assets/appicon.png" alt="Current Track Cover" class="cover" fetchpriority="high" />
+                    <img src="/assets/appicon.png?v=bayganyo" onerror="this.onerror=null;this.src='/assets/appicon.png?v=bayganyo'" alt="" class="cover" fetchpriority="high" />
                     <div class="details">
                         <div class="title">Select a song</div>
                         <div class="album"></div>

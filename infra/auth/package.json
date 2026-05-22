@@ -1,0 +1,14 @@
+{
+    "name": "bayflix-auth",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "server.js",
+    "scripts": {
+        "start": "node --env-file=.env server.js"
+    },
+    "dependencies": {
+        "better-auth": "^1.3.0",
+        "better-sqlite3": "^12.0.0"
+    }
+}

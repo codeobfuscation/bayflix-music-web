@@ -1,0 +1,22 @@
+[Unit]
+Description=Bayflix PocketBase (sync backend)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bayflix
+Group=bayflix
+WorkingDirectory=/srv/bayflix-music/pocketbase
+ExecStart=/srv/bayflix-music/pocketbase/pocketbase serve --http=127.0.0.1:8095
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=4096
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/srv/bayflix-music/pocketbase
+
+[Install]
+WantedBy=multi-user.target

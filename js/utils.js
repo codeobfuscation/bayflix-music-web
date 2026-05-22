@@ -518,7 +518,10 @@ export async function getCoverBlob(api, coverId) {
 
     const fetchWithProxy = async (url) => {
         try {
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+            // Route through our own nginx proxy (/proxy/tidal-images/), which
+            // adds the Access-Control-Allow-Origin header TIDAL's CDN omits.
+            // Previously used corsproxy.io which now CORS-fails on our origin.
+            const proxyUrl = url.replace('https://resources.tidal.com/', '/proxy/tidal-images/');
             const response = await fetch(proxyUrl);
             if (response.ok) return await response.blob();
         } catch (e) {

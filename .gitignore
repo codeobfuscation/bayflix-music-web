@@ -4,23 +4,50 @@ dist
 *.local
 .vite
 .claude
-# Docker
+
+# Local secrets
 .env
+.env.*.local
+
+# Logs
+*.log
+logs/
+
 # Neutralino
 .tmp/
 .vitest-attachments/
 **/__screenshots__/*
 bin/
-*.log
 .storage/
 auth_storage/
 www
 neutralino.js
 package-lock.json
+
 # Direnv
 .envrc
+
 # vim
 .lazy.lua
+
 # Q-DL Files
 qobuz-api
 Qobuz-DL
+
+# IDE — keep editor config personal
+.vscode/
+.idea/
+
+# Cloudflare Workers (local dev caches inside services/)
+services/**/.wrangler/
+services/**/.dev.vars
+services/**/node_modules/
+
+# Hi-Fi API Worker — published as its own repository.
+# Kept locally so deploys work, but not tracked here.
+services/hifi-api/
+
+# Build / tooling
+*.tsbuildinfo
+.next/
+coverage/

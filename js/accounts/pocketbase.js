@@ -4,9 +4,12 @@ import { db } from '../db.js';
 import { authManager } from './auth.js';
 
 const PUBLIC_COLLECTION = 'public_playlists';
-const DEFAULT_POCKETBASE_URL = 'https://data.samidy.xyz';
+const DEFAULT_POCKETBASE_URL = 'https://data.bayflix.ms';
 const POCKETBASE_URL =
-    window.__POCKETBASE_URL__ || localStorage.getItem('monochrome-pocketbase-url') || DEFAULT_POCKETBASE_URL;
+    window.__POCKETBASE_URL__ ||
+    localStorage.getItem('bayflix-pocketbase-url') ||
+    localStorage.getItem('monochrome-pocketbase-url') ||
+    DEFAULT_POCKETBASE_URL;
 
 console.log('[PocketBase] Using URL:', POCKETBASE_URL);
 

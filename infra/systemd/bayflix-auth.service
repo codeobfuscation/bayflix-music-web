@@ -1,0 +1,22 @@
+[Unit]
+Description=Bayflix better-auth server (Google/Discord/email)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bayflix
+Group=bayflix
+WorkingDirectory=/srv/bayflix-music/auth
+ExecStart=/usr/bin/node --env-file=/srv/bayflix-music/auth/.env /srv/bayflix-music/auth/server.js
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=4096
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/srv/bayflix-music/auth
+
+[Install]
+WantedBy=multi-user.target

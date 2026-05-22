@@ -2,16 +2,16 @@
 import { createAuthClient } from 'https://esm.sh/better-auth/client';
 
 const getBaseURL = () => {
-    const local = localStorage.getItem('monochrome-auth-url');
+    const local =
+        localStorage.getItem('bayflix-auth-url') ||
+        localStorage.getItem('monochrome-auth-url');
     if (local) return local;
 
     if (window.__AUTH_URL__) return window.__AUTH_URL__;
 
-    const hostname = window.location.hostname;
-    if (hostname.endsWith('monochrome.tf') || hostname === 'monochrome.tf') {
-        return 'https://auth.monochrome.tf';
-    }
-    return 'https://auth.samidy.com';
+    // Bayflix prod everywhere. Localhost dev still uses prod auth so OAuth
+    // returnTo works without redirect-URI gymnastics.
+    return 'https://auth.bayflix.ms';
 };
 
 export const authClient = createAuthClient({

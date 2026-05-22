@@ -88,10 +88,15 @@ export default defineConfig((_options) => {
             blobAssetPlugin(),
             svgUse(),
             VitePWA({
-                registerType: 'prompt',
+                // autoUpdate means the new SW takes over immediately on next page
+                // load instead of waiting for the user to accept a prompt — fewer
+                // stale-precache `bad-precaching-response` errors after a release.
+                registerType: 'autoUpdate',
                 workbox: {
                     globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
                     cleanupOutdatedCaches: true,
+                    skipWaiting: true,
+                    clientsClaim: true,
                     maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB limit
                     // Define runtime caching strategies
                     runtimeCaching: [

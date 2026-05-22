@@ -4,7 +4,10 @@ import { SVG_RIGHT_ARROW } from './icons';
 
 export const apiSettings = {
     STORAGE_KEY: 'monochrome-api-instances-v9',
-    INSTANCES_URLS: ['https://tidal-uptime.geeked.wtf'],
+    // Upstream uptime tracker (tidal-uptime.geeked.wtf) is dead — NXDOMAIN.
+    // Empty list skips the discovery path and falls through to the hardcoded
+    // `defaultInstances` set further down.
+    INSTANCES_URLS: [],
     defaultInstances: { api: [], streaming: [], qobuz: [] },
     userInstances: null,
     instancesLoaded: false,
@@ -73,32 +76,35 @@ export const apiSettings = {
             }
 
             if (!data) {
-                console.error('Failed to load instances from all uptime APIs:', fetchError);
+                // Only warn if we actually tried URLs. Empty `INSTANCES_URLS`
+                // is intentional (no discovery endpoint) → silently use the
+                // hardcoded defaults below.
+                if (urls.length > 0) {
+                    console.error('Failed to load instances from all uptime APIs:', fetchError);
+                }
+                // Trimmed for Bayflix.MS — removed instances that are dead or
+                // serve no CORS headers from our origin:
+                //   hifi.geeked.wtf            (NXDOMAIN)
+                //   tidal.kinoplus.online      (no Access-Control-Allow-Origin)
+                //   wolf.qqdl.site             (502 + no CORS)
+                //   maus/vogel/katze/hund.qqdl.site  (all 502 + no CORS, 2026-05-21)
+                // Qobuz primary moved to `qobuz.kennyy.com.br` (has CORS).
+                // `qdl-api.monochrome.tf` still works but sends no CORS headers;
+                // we proxy it through our nginx as `/proxy/qobuz-monochrome/`.
                 this.defaultInstances = {
                     api: [
-                        { url: 'https://hifi.geeked.wtf', version: '2.7' },
                         { url: 'https://eu-central.monochrome.tf', version: '2.7' },
                         { url: 'https://us-west.monochrome.tf', version: '2.7' },
                         { url: 'https://api.monochrome.tf', version: '2.5' },
                         { url: 'https://monochrome-api.samidy.com', version: '2.3' },
-                        { url: 'https://maus.qqdl.site', version: '2.6' },
-                        { url: 'https://vogel.qqdl.site', version: '2.6' },
-                        { url: 'https://katze.qqdl.site', version: '2.6' },
-                        { url: 'https://hund.qqdl.site', version: '2.6' },
-                        { url: 'https://tidal.kinoplus.online', version: '2.2' },
-                        { url: 'https://wolf.qqdl.site', version: '2.2' },
                     ],
                     streaming: [
-                        { url: 'https://hifi.geeked.wtf', version: '2.7' },
-                        { url: 'https://maus.qqdl.site', version: '2.6' },
-                        { url: 'https://vogel.qqdl.site', version: '2.6' },
-                        { url: 'https://katze.qqdl.site', version: '2.6' },
-                        { url: 'https://hund.qqdl.site', version: '2.6' },
-                        { url: 'https://wolf.qqdl.site', version: '2.6' },
+                        { url: 'https://eu-central.monochrome.tf', version: '2.7' },
+                        { url: 'https://us-west.monochrome.tf', version: '2.7' },
                     ],
                     qobuz: [
-                        { url: 'https://qdl-api.monochrome.tf', version: '1.0' },
                         { url: 'https://qobuz.kennyy.com.br', version: '1.0' },
+                        { url: '/proxy/qobuz-monochrome', version: '1.0' },
                     ],
                 };
                 this.instancesLoaded = true;
@@ -221,8 +227,8 @@ export const apiSettings = {
             const bottom = [];
             for (const item of array) {
                 const url = getUrl(item);
-                if (url.includes('hifi.geeked.wtf')) top.push(item);
-                else if (url.includes('.qqdl.site')) bottom.push(item);
+                // (Previously: prefer hifi.geeked.wtf — that host is now dead.)
+                if (url.includes('.qqdl.site')) bottom.push(item);
                 else middle.push(item);
             }
             return [...top, ...shuffle(middle), ...shuffle(bottom)];
@@ -578,10 +584,10 @@ export const backgroundSettings = {
 
     isEnabled() {
         try {
-            // Default to true if not set
-            return localStorage.getItem(this.STORAGE_KEY) !== 'false';
+            // Bayflix default: OFF — keep the brand colour, don't override with album art.
+            return localStorage.getItem(this.STORAGE_KEY) === 'true';
         } catch {
-            return true;
+            return false;
         }
     },
 
@@ -595,10 +601,11 @@ export const dynamicColorSettings = {
 
     isEnabled() {
         try {
-            // Default to true if not set
-            return localStorage.getItem(this.STORAGE_KEY) !== 'false';
+            // Bayflix default: OFF — keep the brand accent (Bayflix red) instead
+            // of letting the playing track's album art override it.
+            return localStorage.getItem(this.STORAGE_KEY) === 'true';
         } catch {
-            return true;
+            return false;
         }
     },
 

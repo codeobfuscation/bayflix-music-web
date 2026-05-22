@@ -68,23 +68,15 @@ if (typeof window !== 'undefined') {
         },
     });
 
-    // analytics
-    const plausibleScript = document.createElement('script');
-    plausibleScript.async = true;
-    plausibleScript.src = 'https://plausible.canine.tools/js/pa-dCMvQpiD1-AJmi8o3xviO.js';
-    document.head.appendChild(plausibleScript);
-
+    // analytics: Bayflix does not ship third-party telemetry. The upstream
+    // Plausible call was removed during the rebrand. Keep a no-op stub so any
+    // downstream code that calls window.plausible() doesn't throw.
     window.plausible =
         window.plausible ||
         function () {
-            (window.plausible.q = window.plausible.q || []).push(arguments);
+            /* no-op */
         };
-    window.plausible.init =
-        window.plausible.init ||
-        function (i) {
-            window.plausible.o = i || {};
-        };
-    window.plausible.init();
+    window.plausible.init = window.plausible.init || function () {};
 }
 
 // Lazy-loaded modules
@@ -107,6 +99,11 @@ async function loadDownloadsModule() {
 }
 
 async function fetchcontributors() {
+    // Contributors panel was removed in the rebrand; the upstream samidy
+    // endpoint also CORS-blocks our origin. Keep the function as a no-op so the
+    // call site at app.js:485 stays safe.
+    return;
+    // eslint-disable-next-line no-unreachable
     try {
         const response = await fetch('https://api.samidy.com/api/contributors');
         if (!response.ok) return;

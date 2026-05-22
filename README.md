@@ -1,275 +1,143 @@
- <p align="center">
-  <a href="https://monochrome.tf">
-    <img src="https://github.com/monochrome-music/monochrome/blob/main/public/assets/512.png?raw=true" alt="Monochrome Logo" width="150px">
-  </a>
-</p>
+# Bayflix Music
 
-<h1 align="center">Monochrome</h1>
+> Hi-Res lossless музикален стриминг в чист, фокусиран уеб интерфейс.
 
-<p align="center">
-  <strong>An open-source, privacy-respecting, ad-free music app.</strong>
-</p>
+Bayflix Music е едно-страничен (SPA) уеб клиент за висококачествена музика, хостнат на `https://bayflix.ms`.
 
-<p align="center">
-  <a href="https://monochrome.tf">Website</a> -
-  <a href="https://ko-fi.com/monochrometf">Donate</a> -
-  <a href="#features">Features</a> -
-  <a href="#usage">Usage</a> -
-  <a href="#self-hosting">Self-Hosting</a> -
-  <a href="CONTRIBUTING.md">Contributing</a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/monochrome-music/monochrome/stargazers">
-    <img src="https://img.shields.io/github/stars/monochrome-music/monochrome?style=for-the-badge&color=ffffff&labelColor=000000" alt="GitHub stars">
-  </a>
-  <a href="https://github.com/monochrome-music/monochrome/forks">
-    <img src="https://img.shields.io/github/forks/monochrome-music/monochrome?style=for-the-badge&color=ffffff&labelColor=000000" alt="GitHub forks">
-  </a>
-  <a href="https://github.com/monochrome-music/monochrome/issues">
-    <img src="https://img.shields.io/github/issues/monochrome-music/monochrome?style=for-the-badge&color=ffffff&labelColor=000000" alt="GitHub issues">
-  </a>
-</p>
+Поддръжка: [@Necrosis](https://github.com/codeobfuscation) · Discord: [discord.gg/bayflix](https://discord.gg/bayflix)
 
 ---
 
-## What is Monochrome?
+## Какво представлява
 
-**Monochrome** is an open-source, privacy-respecting, ad-free [TIDAL](https://tidal.com) web UI, built on top of tidal API + Q-DL. It provides a beautiful, minimalist interface for streaming high-quality music without the clutter of traditional streaming platforms.
-
-[![Monochrome UI: NASIR by Nas](https://i.samidy.xyz/NASIR.png)](https://monochrome.tf/album/90502209)
-
-## [![Monochrome UI: Jump Out by Osamason](https://i.samidy.xyz/jumpout.png)](https://monochrome.tf/album/413189044)
-
-## Features
-
-### Audio Quality
-
-- High-quality High-Res/lossless audio streaming
-- Support for local music files
-- API caching for improved performance
-
-### Interface
-
-- Dark, minimalist interface optimized for focus
-- Animated Album Covers For Supported Albums
-- Customizable themes & Community Theme Store
-- Accurate and unique audio visualizer
-- Offline-capable Progressive Web App (PWA)
-- Media Session API integration for system controls
-
-### Library & Organization
-
-- Recently Played tracking for easy history access
-- Comprehensive Personal Library for favorites
-- Queue management with shuffle and repeat modes
-- Native Podcast support & organization
-- Playlist import from other platforms
-- Public playlists for social sharing
-- Smart recommendations for new songs, albums & artists
-- Infinite Recommendation Radio
-- Explore Page (Hot & New) for discovering newly added music and whats trending overall or within each genre
-
-### Lyrics & Metadata
-
-- Lyrics support with karaoke mode
-- Genius integration for lyrics
-- Track downloads with automatic metadata embedding
-
-### Integrations
-
-- Account system for cross-device syncing
-- Customizable & Public Profiles
-- Real-time Listening Parties for synced playback with friends
-- Last.fm and ListenBrainz integration for scrobbling
-- OAuth support (Google, Discord, GitHub, Spotify)
-- Unreleased music from [ArtistGrid](https://artistgrid.cx)
-- Dynamic Discord Embeds
-- Artist Biography + Social Links for learning more about your favorite artists
-- Multiple API instance support with failover
-
-### Power User Features
-
-- Keyboard shortcuts & Command Palette (CTRL+K) for power users
+- Стриминг на **lossless / Hi-Res FLAC** аудио.
+- Метаданни (албуми, корици, текстове, артисти, плейлисти) от TIDAL.
+- Аудио чрез Qobuz `qdl` бридж.
+- **Локални акаунти**, **Google** и **Discord** логин през собствен `better-auth` бекенд.
+- Синхронизация на профили, любими и история в собствен **PocketBase** инстанс.
+- Собствен **Cloudflare Worker** за TIDAL прокси (`api.bayflix.ms`).
+- Работи като **PWA** (инсталируемо, офлайн кеш).
+- Тема в **червен Bayflix цвят** (`#e50914`) и собствено брандиране.
 
 ---
 
-## Quick Start
+## Стек
 
-### Live Instance
-
-Our Recommended way to use monochrome is through our official instance:
-
-**[monochrome.tf](https://monochrome.tf)** / **[monochrome.samidy.com](https://monochrome.samidy.com)**
-
-For alternative instances, check [INSTANCES.md](INSTANCES.md).
+| Слой | Технология |
+|------|------------|
+| Фронтенд | Vanilla JS + Vite 7 + `vite-plugin-pwa` (Workbox) |
+| Стилове | Чист CSS, custom properties за тема |
+| Аудио | `shaka-player`, `hls.js`, `@ffmpeg/ffmpeg` |
+| Метаданни прокси | Cloudflare Worker (`services/hifi-api/`) |
+| Auth | `better-auth` + Express, Google / Discord / email |
+| Sync DB | PocketBase 0.26+ |
+| Инфраструктура | nginx + Cloudflare (Full strict TLS, Authenticated Origin Pulls) |
+| Мобилно | Capacitor (Android / iOS пакетите са в `android/` и `ios/`) |
 
 ---
 
-## Self-Hosting
+## Бърз старт (локален dev)
 
-NOTE: Accounts will not work on self-hosted instances. Our Appwrite authentication system only allows authorized domains.
-
-We had to heavily customize the authentication system and write several custom scripts to support features like SMTP and Google OAuth (which are currently bugged in Appwrite). Because of this, we can no longer provide a self-hostable accounts system.
-
-### Option 1: Docker (Recommended)
+Изисквания:
+- **Bun** (или Node 22+) за фронтенда
+- **Node 22+** за `infra/auth/` (better-auth)
+- **PocketBase** binary, ако искаш да тестваш sync локално
 
 ```bash
-git clone https://github.com/monochrome-music/monochrome.git
-cd monochrome/docker
-docker compose up -d
+# 1. Инсталирай зависимостите
+bun install
+
+# 2. Копирай .env шаблона и попълни ключовете
+cp .env.example .env
+#    -> Cloudflare token, Google OAuth, Discord OAuth, PocketBase admin, better-auth secret
+
+# 3. Стартирай dev сървъра
+bun run dev
+#    -> http://localhost:5173
 ```
 
-Visit `http://localhost:3000`
+В dev режим, фронтендът сочи към production бекендите (`auth.bayflix.ms`, `data.bayflix.ms`, `api.bayflix.ms`). За пълно локално развитие виж `infra/`.
 
-### Tailscale Access
+---
 
-Visit `http://<tailscale_server_hostname_or_ip>:3000`
+## Production деплой
 
-By default, the app uses Vite preview, which restricts access to localhost.  
-To allow access over Tailscale:
+Production живее на `https://bayflix.ms`. Цялата конфигурация е документирана в [`infra/`](infra/):
 
-1. Open `vite.config.js`
+| Хост | Сървър | Какво | nginx vhost |
+|------|--------|-------|-------------|
+| `bayflix.ms` | VPS | Статичен SPA build | `infra/nginx/bayflix.ms` |
+| `auth.bayflix.ms` | VPS | better-auth (Node, port 8096) | `infra/nginx/auth.bayflix.ms` |
+| `data.bayflix.ms` | VPS | PocketBase (Go, port 8095) | `infra/nginx/data.bayflix.ms` |
+| `api.bayflix.ms` | Cloudflare | TIDAL Worker | n/a |
 
-2. Uncomment and configure the `preview` section:
+### Сигурностен модел
 
-```js
-preview: {
-    host: true,
-    allowedHosts: ['<your_tailscale_hostname>'], // e.g. pi5.tailf5f622.ts.net
-},
-```
+- **Cloudflare Full (strict)** SSL — origin не приема plain HTTP.
+- **Cloudflare Origin Cert** (15 години, RSA-2048) за `bayflix.ms` + `*.bayflix.ms` на `/etc/ssl/cloudflare/`.
+- **Authenticated Origin Pulls (AOP)** — nginx изисква клиентски сертификат подписан от CF Origin Pull CA. Директни заявки към IP-то получават `400`.
+- **CF IP allowlist** на ниво nginx vhost (`/etc/nginx/cloudflare.conf` + `deny all`) — само CF IPv4 ranges могат да достъпват порт 443.
+- **HSTS** `max-age=31536000; includeSubDomains` за всички подмени.
 
-3. Restart with a fresh container (if already running):
+### Build & deploy на фронтенда
 
 ```bash
-docker compose down
-docker compose up -d
+bun run build         # генерира dist/
+# rsync dist/ root@VPS:/srv/bayflix-music/web/
 ```
 
-For development mode and advanced setups, see [DOCKER.md](DOCKER.md).
+nginx vhost-ите служат `dist/` директно и proxy-ват `/api/auth/*` → 127.0.0.1:8096, `/api/*` (PocketBase) → 127.0.0.1:8095, и няколко `/proxy/*` маршрута за изображения и аудио (виж файловете в `infra/nginx/`).
 
-### Option 2: Manual Installation
+### TIDAL Worker
 
-#### Prerequisites
-
-- [Bun](https://bun.sh/) (Preferred) or [Node.js](https://nodejs.org/) (Version 20+ or 22+ recommended)
-
-#### Local Development
-
-1. **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/monochrome-music/monochrome.git
-    cd monochrome
-    ```
-
-2. **Install dependencies:**
-
-    ```bash
-    bun install
-    # or
-    npm install # NPM is included with Node.js
-    ```
-
-3. **Start the development server:**
-
-    ```bash
-    bun run dev
-    # or
-    npm run dev
-    ```
-
-4. **Open your browser:**
-   Navigate to `http://localhost:5173/`
-
-#### Building for Production
+Хи-Фи API-то живее в отделен репо и се деплойва с `wrangler deploy` от папката си. Worker secrets:
 
 ```bash
-bun run build
-# or
-npm run build
+cd services/hifi-api
+wrangler secret put CLIENT_ID
+wrangler secret put CLIENT_SECRET
+wrangler secret put REFRESH_TOKEN
+wrangler deploy
 ```
 
 ---
 
-## Usage
+## Конфигурация
 
-### Basic Usage
+Всички runtime ключове живеят в `.env` (gitignored). Виж [`.env.example`](.env.example) за пълния списък. Накратко:
 
-1. Visit the [Website](https://monochrome.tf) or your local development server
-2. Search for your favorite artists, albums, or tracks
-3. Click play to start streaming
-4. Use the media controls to manage playback, queue, and volume
-
-### Keyboard Shortcuts
-
-| Shortcut      | Action                       |
-| ------------- | ---------------------------- |
-| `Space`       | Play / Pause                 |
-| `→`           | Seek forward 10s             |
-| `←`           | Seek backward 10s            |
-| `Shift` + `→` | Next track                   |
-| `Shift` + `←` | Previous track               |
-| `↑`           | Volume up                    |
-| `↓`           | Volume down                  |
-| `M`           | Mute / Unmute                |
-| `S`           | Toggle shuffle               |
-| `R`           | Toggle repeat                |
-| `Q`           | Open queue                   |
-| `L`           | Toggle lyrics                |
-| `/`           | Focus search                 |
-| `Esc`         | Close modals                 |
-| `[`           | Previous visualizer preset   |
-| `]`           | Next visualizer preset       |
-| `\`           | Toggle visualizer auto-cycle |
-| `Ctrl` + `K`  | Command Palette              |
-
-### Account Features
-
-To sync your library, history, and playlists across devices:
-
-1. Click the "Accounts" Section
-2. Sign in with Google or Email
-3. Your data will automatically sync across all devices
+- `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ZONE_ID` — за infra скриптове.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google OAuth. Redirect URI: `https://auth.bayflix.ms/api/auth/callback/google`.
+- `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` — Discord OAuth. Redirect URI: `https://auth.bayflix.ms/api/auth/callback/discord`.
+- `BETTER_AUTH_SECRET` — random 48 байта. Генерирай с `openssl rand -base64 48`.
+- `PB_ADMIN_EMAIL` / `PB_ADMIN_PASS` — PocketBase superuser.
 
 ---
 
-## Contributing
+## Структура
 
-We welcome contributions from the community! Please see our [Contributing Guide](CONTRIBUTING.md) for:
-
-- Setting up your development environment
-- Code style and linting
-- Project structure
-- Before You Contribute
-- Commit message conventions
-- Deployment information
+```
+.
+├── index.html                # SPA entry
+├── js/                       # цялата UI логика
+│   ├── api.js                # TIDAL + Qobuz + enrichment
+│   ├── tracker.js            # unreleased / leak integration
+│   ├── accounts/             # auth + PocketBase клиенти
+│   └── ...
+├── styles.css                # глобални стилове + Bayflix тема (червен)
+├── public/                   # статични asset-и (favicon, лого, иконки, manifest)
+├── infra/
+│   ├── nginx/                # production vhost конфигурации
+│   └── auth/                 # better-auth Node сървър
+├── services/
+│   ├── hifi-api/             # TIDAL Cloudflare Worker (отделен репо)
+│   └── tidal-auth-helper/    # CLI за TIDAL device-code OAuth
+├── android/, ios/            # Capacitor mobile проекти
+└── .env.example              # шаблон за конфигурация
+```
 
 ---
 
-<p align="center">
-  <a href="https://fmhy.net/audio#streaming-sites">
-    <img src="https://raw.githubusercontent.com/monochrome-music/monochrome/refs/heads/main/public/assets/asseenonfmhy880x310.png" alt="As seen on FMHY" height="50">
-  </a>
-</p>
+## Лиценз
 
-<p align="center">
-  <a href="https://notbyai.fyi">
-    <img src="https://i.samidy.xyz/Developed-By-Humans-Not-By-AI-Badge-black%402x.png" alt="Developed by Humans" height="50">
-  </a>
-</p>
-
-<p align="center">
-  Made with ❤️ by the Monochrome team
-</p>
-
-## Star History
-
-<a href="https://www.star-history.com/#monochrome-music/monochrome&type=date&logscale&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=monochrome-music/monochrome&type=date&theme=dark&logscale&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=monochrome-music/monochrome&type=date&logscale&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=monochrome-music/monochrome&type=date&logscale&legend=top-left" />
- </picture>
-</a>
+Apache License 2.0. Виж [`LICENSE`](LICENSE).

@@ -92,7 +92,9 @@ function getSheetId(url) {
 
 function transformImageUrl(url) {
     if (!url) return url;
-    return url.replace('https://s3.sad.ovh/trackerapi/', 'https://r2.artistgrid.cx/');
+    return url
+        .replace('https://s3.sad.ovh/trackerapi/', '/proxy/artistgrid-r2/')
+        .replace('https://r2.artistgrid.cx/', '/proxy/artistgrid-r2/');
 }
 
 function transformErasImages(eras) {
@@ -108,9 +110,9 @@ function transformErasImages(eras) {
 
 async function fetchTrackerData(sheetId) {
     const endpoints = [
-        'https://trackerapi-1.artistgrid.cx/get/',
-        'https://trackerapi-2.artistgrid.cx/get/',
-        'https://trackerapi-3.artistgrid.cx/get/',
+        '/proxy/trackerapi-1/get/',
+        '/proxy/trackerapi-2/get/',
+        '/proxy/trackerapi-3/get/',
     ];
 
     let lastError = null;
@@ -345,7 +347,7 @@ export async function renderTrackerArtistPage(sheetId, container) {
     const downloadBtn = document.getElementById('download-tracker-artist-btn');
 
     const normalizedName = normalizeArtistName(artist.name);
-    imageEl.src = `https://assets.artistgrid.cx/${normalizedName}.webp`;
+    imageEl.src = `/proxy/artistgrid/${normalizedName}.webp`;
     imageEl.onerror = function () {
         this.src = 'assets/logo.svg';
     };
@@ -733,9 +735,6 @@ export async function renderTrackerProjectPage(sheetId, projectName, container, 
 export async function renderUnreleasedPage(container) {
     container.innerHTML = `
         <h2 class="section-title">Unreleased Music</h2>
-        <p style="color: var(--muted-foreground); margin-bottom: 1.5rem; font-size: 0.9rem;">
-            Unreleased Songs & Info Provided By <a href="https://artistgrid.cx" target="_blank" style="text-decoration: underline;">ArtistGrid</a>. Consider Donating to Them.
-        </p>
         <div style="margin-bottom: 1.5rem;">
             <input 
                 type="text" 
@@ -777,7 +776,7 @@ export async function renderUnreleasedPage(container) {
         artistCard.dataset.artistName = artist.name.toLowerCase();
 
         const normalizedName = normalizeArtistName(artist.name);
-        const coverImage = `https://assets.artistgrid.cx/${normalizedName}.webp`;
+        const coverImage = `/proxy/artistgrid/${normalizedName}.webp`;
 
         artistCard.innerHTML = `
             <div class="card-image-wrapper">

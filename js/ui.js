@@ -732,7 +732,7 @@ export class UIRenderer {
     }
 
     createMixCardHTML(mix) {
-        const imageSrc = mix.cover || '/assets/appicon.png';
+        const imageSrc = mix.cover || '/assets/appicon.png?v=bayganyo';
         const description = mix.subTitle || mix.description || '';
         const isCompact = cardSettings.isCompactAlbum();
 
@@ -792,7 +792,7 @@ export class UIRenderer {
             } else if (uniqueCovers.length > 0) {
                 imageHTML = `<img src="${this.api.getCoverUrl(uniqueCovers[0])}" alt="${playlist.name}" class="card-image" loading="lazy">`;
             } else {
-                imageHTML = `<img src="/assets/appicon.png" alt="${playlist.name}" class="card-image" loading="lazy">`;
+                imageHTML = `<img src="/assets/appicon.png?v=bayganyo" alt="${playlist.name}" class="card-image" loading="lazy">`;
             }
         }
 
@@ -2961,11 +2961,6 @@ export class UIRenderer {
             `padding:0.32rem 0.9rem;border-radius:2rem;border:1px solid ${active ? 'var(--primary)' : 'var(--border)'};background:${active ? 'var(--primary)' : 'transparent'};color:${active ? 'var(--primary-foreground)' : 'var(--muted-foreground)'};cursor:pointer;font-size:0.82rem;font-weight:500;white-space:nowrap;`;
 
         container.innerHTML = `
-            <div style="font-size:0.72rem;color:var(--muted-foreground);margin-bottom:0.9rem;">
-                Powered by <a href="https://aoty.prigoana.pw/" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;">aoty-api</a>
-                &nbsp;·&nbsp;
-                <a href="https://ko-fi.com/edideaur" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;">consider donating</a>
-            </div>
             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem;">
                 ${TABS.map(({ id, label }, i) => `<button class="aoty-subnav-btn" data-aoty-tab="${id}" style="${pill(i === 0)}">${label}</button>`).join('')}
             </div>
@@ -5066,7 +5061,7 @@ export class UIRenderer {
                             collageEl.appendChild(img);
                         });
                     } else {
-                        imageEl.src = '/assets/appicon.png';
+                        imageEl.src = '/assets/appicon.png?v=bayganyo';
                         imageEl.style.display = 'block';
                         if (collageEl) collageEl.style.display = 'none';
                     }
@@ -5216,7 +5211,7 @@ export class UIRenderer {
 
                     await this.extractAndApplyColor(this.api.getCoverUrl(imageId, '160'));
                 } else {
-                    imageEl.src = '/assets/appicon.png';
+                    imageEl.src = '/assets/appicon.png?v=bayganyo';
                     this.setPageBackground(null);
                     this.resetVibrantColor();
                 }
@@ -5460,7 +5455,7 @@ export class UIRenderer {
                     this.setPageBackground(coverUrl);
                     await this.extractAndApplyColor(this.api.getCoverUrl(tracks[0].album.cover, '160'));
                 } else {
-                    imageEl.src = '/assets/appicon.png';
+                    imageEl.src = '/assets/appicon.png?v=bayganyo';
                     this.setPageBackground(null);
                     this.resetVibrantColor();
                 }
